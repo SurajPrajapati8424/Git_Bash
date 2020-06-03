@@ -2,11 +2,88 @@ git status 	//to chechk whether it is git repo or not !
 
 git init	//To inintalize 
 
-git add --a 	//--a for ALL  insert into staged area
+git add --a or git add .		//--a for ALL  insert into staged area
+git restore --staged "file_name" 	//restore from Staged area.
 
-git commit -m   // -m for Massege. without m it opens EDITOR
+git commit -m  				 // -m for Massege. without m it opens EDITOR
+git commit --amend 			 //edit previous commit.
+git restore --staged "file name " 	 //To Unstaged
 
-git log		// log Display every commit & action on file
+git checkout "File_name" 		 //restore all Data that is manupilated.
+git checkout -f  			 //to go back to the previous Commit
+
+
+git log		// log Display every commit & action on file(Display log's ).
+git log -p 	//display commit and what is changed( removed & added ) in file.
+git log -p 	//to display "n" no. of commit
+git log --stat 	//short details
+git log --pretty=oneline 
+git log --pretty=short 
+git log --pretty=full
+git log --since=2.days
+git log --since=2.weeks
+git log --since=2.months
+git log --since=2.years
+
+git log --pretty=format:"%h -- %an" 
+// %h=abbrivation hash commit, 
+   %an = author name
+   %ae = author email
+   %t = tree hash
+   %p = parent hash
+
 
 rm -rf .git 	// Remove All File --- NO TRACK OF FILE.
+
+
+	--- How to ignore file ( for eg., "error.log"  ) ---
+step 1: touch .gitignore   			    //create .gitignore file.
+step 2: write "error.log" in ".gitignore" FILE	   //Edit .gitigonre file > type the file name U wanna ignore.
+step 3: git add .gitignore			  //add .gitignore file into staged area.
+step 4: git commit -m .gitignore		 //ready for push.
+  ---- NOTE:-  "error.log" file will not longer be part of 'WARNING' if you changes this file 'multiple time' :-).
+   -> In .gitignore write ( *.log ) to ignore all  "".log "" FILE.
+   -> "FOLDER_EG/" to ignore all "FOLDER_EG"  FROM ANYWHERE  in 'PWD'
+   -> "/dynamic/"  to ignore 'dynamic' from present folder ONLY.
+   -> eg., "/GIT/dynamic/dir/" To specific folder ;-)
+
+
+git dif 			//Compare `STAGING Area` with UPDATED! Working Area
+	
+git diff --staged		//To Compare "last Commit"  to "Current stage".
+
+git commit -a -m "msg"		//Direct commit skipping staging.
+	eg., (if u create new file which is not staged /\ this cmnd will commit all staged at this point. it doesn't include new file wich is note staged ).
+
+git rm demos.docx			//remove file.
+
+git mv Git_start.txt Git_First.txt	// move rename
+
+git rm --cached dynamic/dir/live.txt	//stop tracking the file which is long before added to stage  then added to .gitignore .
+
+======================= REMOTE =======================
+git remote add origin https://github.com/SurajPrajapati8424/Git_Bash.git
+git remote add origin git@github.com:SurajPrajapati8424/Git_Bash.git
+git remote
+
+git remote -v			//to see fetch & push sites.
+
+git push -u origin master
+(It Deny to push in this repo.)
+
+//Create SSH Keys		key saved:= [ /c/Users/suraj/.ssh/id_rsa]
+ssh-keygen -t rsa -b 4096 -C "email"
+
+
+//start ssh service
+eval $(ssh-agent -s)
+
+
+//saving generated ssh
+ssh-add ~/.ssh/id_rsa
+
+
+//retrieve ssh key
+tail ~/.ssh/id_rsa.pub
+	*copy all output paste in GitHub SSH Key & ADD SSH KEY TO ACC//
 
