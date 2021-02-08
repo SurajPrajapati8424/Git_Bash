@@ -1,5 +1,8 @@
 package com.dr.psycho.ryuk.Utils;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
@@ -7,18 +10,29 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.media.ImageReader;
 import android.net.Uri;
+import android.nfc.Tag;
+import android.os.Build;
 import android.provider.MediaStore;
+import android.util.Log;
 
+import androidx.annotation.RequiresApi;
+
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.IllegalFormatWidthException;
 
 public class BitmapUtils {
 
-//    Step 02
+    private static final String TAG = BitmapUtils.class.getSimpleName();
+    //    Step 02
     public static Bitmap getBitmapFromAssets(Context context, String fileName, int width, int height)
     {
         AssetManager assetManager = context.getAssets();
@@ -28,14 +42,18 @@ public class BitmapUtils {
         Bitmap bitmap = null;
         try
         {
-            BitmapFactory.Options options = new BitmapFactory.Options();
+            final BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
+
             inputStream = assetManager.open(fileName);
+
+//            Calculate in simple Size
             options.inSampleSize = calculateInSampleSize(options,width,height);
+//            Decode bitmap with inSampleSize set
             options.inJustDecodeBounds = false;
             return BitmapFactory.decodeStream(inputStream,null, options);
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG,"Exception: "+e.getMessage());
         }
         return null;
     }
@@ -44,15 +62,16 @@ public class BitmapUtils {
     public static Bitmap getBitmapFromGallery(Context context, Uri uri, int width, int height)
     {
         String[] filePathColumn = {MediaStore.Images.Media.DATA};
-        Cursor cursor = context.getContentResolver().query(uri,filePathColumn,null,null,null);
+        Cursor cursor = context.getContentResolver().query(uri, filePathColumn,null,null,null);
         cursor.moveToFirst();
         int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
         String picturePath = cursor.getString(columnIndex);
         cursor.close();
 //        Copy paste from Above
-        BitmapFactory.Options options = new BitmapFactory.Options();
+
+        final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(picturePath,options);
+        BitmapFactory.decodeFile(picturePath, options);
 //        Copy paste
         options.inSampleSize = calculateInSampleSize(options,width,height);
         options.inJustDecodeBounds = false;
@@ -117,7 +136,6 @@ public class BitmapUtils {
                 inSampleSize *= 2;
             }
         }
-
         return inSampleSize;
     }
 
@@ -143,4 +161,78 @@ public class BitmapUtils {
         return bitmap;
     }
 
+//    @RequiresApi(api = Build.VERSION_CODES.Q)
+    public static String insertImage(ContentResolver cr, Bitmap source,
+                                   String title, String description) throws IOException {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE,title);
+        values.put(MediaStore.Images.Media.DISPLAY_NAME,title);
+        values.put(MediaStore.Images.Media.DESCRIPTION,description);
+        values.put(MediaStore.Images.Media.MIME_TYPE,"image/jpeg");
+        values.put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis());
+        values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
+
+        Uri uri = null;
+        String stringUrl = null;
+        try {
+            uri = cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values);
+            if (source != null)
+            {
+                OutputStream outputStream = cr.openOutputStream(uri);
+                try{
+                    source.compress(Bitmap.CompressFormat.JPEG,50,outputStream);
+                }finally
+                {
+                    outputStream.close();
+                }
+                long id = ContentUris.parseId(uri);
+                Bitmap miniThumb = MediaStore.Images.Thumbnails.getThumbnail(cr,id,MediaStore.Images.Thumbnails.MINI_KIND,null);
+                storeThumbnail(cr,miniThumb,id,50f,50f,MediaStore.Images.Thumbnails.MICRO_KIND);
+            }
+            else {
+                cr.delete(uri,null,null);
+                uri = null;
+            }
+        } catch (FileNotFoundException e) {
+            if (uri != null){
+                cr.delete(uri,null,null);
+                uri = null;
+            }
+        }
+        if (uri != null){
+            stringUrl = uri.toString();
+        }
+        return stringUrl;
+    }
+
+    private static final Bitmap storeThumbnail(ContentResolver cr, Bitmap miniThumb, long id, float width, float height, int kind) {
+        Matrix matrix = new Matrix();
+
+        float scaleX = width/miniThumb.getWidth();
+        float scaleY = height/miniThumb.getHeight();
+
+        matrix.setScale(scaleX,scaleY);
+
+        Bitmap thumb = Bitmap.createBitmap(miniThumb,0,0,miniThumb.getWidth(),miniThumb.getHeight(),matrix,true);
+
+        ContentValues contentValues = new ContentValues(4);
+        contentValues.put(MediaStore.Images.Thumbnails.KIND,kind);
+        contentValues.put(MediaStore.Images.Thumbnails.IMAGE_ID,(int) id);
+        contentValues.put(MediaStore.Images.Thumbnails.HEIGHT,thumb.getHeight());
+        contentValues.put(MediaStore.Images.Thumbnails.WIDTH,thumb.getWidth());
+
+        Uri uri = cr.insert(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI,contentValues);
+        try {
+            OutputStream outputStream = cr.openOutputStream(uri);
+            thumb.compress(Bitmap.CompressFormat.JPEG,100,outputStream);
+            outputStream.close();
+            return thumb;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
