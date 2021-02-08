@@ -41,12 +41,15 @@ public class EditImageFragment extends Fragment implements SeekBar.OnSeekBarChan
         seekbar_contrast = (SeekBar) itemView.findViewById(R.id.seekbar_contrast);
         seekbar_saturation = (SeekBar) itemView.findViewById(R.id.seekbar_saturation);
 
+        // keeping brightness value b/w -100 / +100
         seekbar_brightness.setMax(200);
         seekbar_brightness.setProgress(100);
 
+        // keeping contrast value b/w 1.0 - 3.0
         seekbar_contrast.setMax(20);
         seekbar_contrast.setProgress(0);
 
+        // keeping saturation value b/w 0.0 - 3.0
         seekbar_saturation.setMax(30);
         seekbar_saturation.setProgress(10);
 
@@ -62,15 +65,20 @@ public class EditImageFragment extends Fragment implements SeekBar.OnSeekBarChan
         if (listener != null)
         {
             if (seekBar.getId() == R.id.seekbar_brightness){
-                listener.onBrightnessChanged(progress-100);
+                listener.onBrightnessChanged(progress - 100);
             }
             else if (seekBar.getId() == R.id.seekbar_contrast){
+                // converting int value to float
+                // contrast values are b/w 1.0f - 3.0f
+                // progress = progress > 10 ? progress : 10;
                 progress += 10;
-                float value = .10f*progress;
+                float value = .10f * progress;
                 listener.onContrastChanged((int) value);
             }
             else if (seekBar.getId() == R.id.seekbar_saturation){
-                float value = .10f*progress;
+                // converting int value to float
+                // saturation values are b/w 0.0f - 3.0f
+                float value = .10f * progress;
                 listener.onSaturationChanged((int) value);
             }
         }

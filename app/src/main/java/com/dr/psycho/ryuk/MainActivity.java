@@ -31,6 +31,7 @@ import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+
 import com.zomato.photofilters.imageprocessors.Filter;
 import com.zomato.photofilters.imageprocessors.subfilters.BrightnessSubFilter;
 import com.zomato.photofilters.imageprocessors.subfilters.ContrastSubFilter;
@@ -42,7 +43,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements FilterListFragmentListener, EditImageFragmentListener {
 
     public static final String pictureName = "flash.jpg";
-    public static final int PERMISSION_PICK_IMAGE = 1000;
+    public static final int PERMISSION_PICK_IMAGE = 101;
 
     ImageView img_preview;
     TabLayout tabLayout;
@@ -122,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements FilterListFragmen
     public void onSaturationChanged(int saturation) {
         saturationFinal = saturation;
         Filter myFilter = new Filter();
-        myFilter.addSubFilter(new BrightnessSubFilter(saturation));
+        myFilter.addSubFilter(new SaturationSubfilter(saturation));
         img_preview.setImageBitmap(myFilter.processFilter(finalBitmap.copy(Bitmap.Config.ARGB_8888, true)));
     }
 
@@ -130,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements FilterListFragmen
     public void onContrastChanged(int contrast) {
         contrastFinal = contrast;
         Filter myFilter = new Filter();
-        myFilter.addSubFilter(new BrightnessSubFilter(contrast));
+        myFilter.addSubFilter(new ContrastSubFilter(contrast));
         img_preview.setImageBitmap(myFilter.processFilter(finalBitmap.copy(Bitmap.Config.ARGB_8888, true)));
 
     }
@@ -142,7 +143,8 @@ public class MainActivity extends AppCompatActivity implements FilterListFragmen
 
     @Override
     public void onEditComplete() {
-        Bitmap bitmap = filteredBitmap.copy(Bitmap.Config.ARGB_8888, true);
+//        DID FINAL from Git
+        final Bitmap bitmap = filteredBitmap.copy(Bitmap.Config.ARGB_8888, true);
 
         Filter myFilter = new Filter();
         myFilter.addSubFilter(new BrightnessSubFilter(brightnessFinal));
@@ -192,7 +194,8 @@ public class MainActivity extends AppCompatActivity implements FilterListFragmen
     }
 
     private void openImageFromGallery () {
-        Dexter.withContext(this)
+//        Added withActivity(this) & .check(); at end from Git
+        Dexter.withActivity(this)
                 .withPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .withListener(new MultiplePermissionsListener() {
@@ -212,11 +215,12 @@ public class MainActivity extends AppCompatActivity implements FilterListFragmen
                     public void onPermissionRationaleShouldBeShown(List<PermissionRequest> list, PermissionToken permissionToken) {
                         permissionToken.continuePermissionRequest();
                     }
-                });
+                }).check();
     }
     private void saveImageToGallery ()
     {
-        Dexter.withContext(this)
+//        Added withActivity(this) & .check(); at end from Git
+        Dexter.withActivity(this)
                 .withPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .withListener(new MultiplePermissionsListener() {
@@ -230,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements FilterListFragmen
                                         null);
                                 if (!TextUtils.isEmpty(path)){
                                     Snackbar snackbar = Snackbar.make(coordinatorLayout,"Image saved to Gallery!",
-                                            Snackbar.LENGTH_SHORT)
+                                            Snackbar.LENGTH_LONG)
                                             .setAction("OPEN", new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View v) {
@@ -243,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements FilterListFragmen
                                     {
                                         Snackbar snackbar = Snackbar.make(coordinatorLayout,
                                                 "Unable to saved Image !",
-                                                Snackbar.LENGTH_SHORT);
+                                                Snackbar.LENGTH_LONG);
                                         snackbar.show();
                                     }
                             } catch (IOException e) {
@@ -259,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements FilterListFragmen
                     public void onPermissionRationaleShouldBeShown(List<PermissionRequest> list, PermissionToken permissionToken) {
                         permissionToken.continuePermissionRequest();
                     }
-                });
+                }).check();
     }
 
     private void openImage(String path) {

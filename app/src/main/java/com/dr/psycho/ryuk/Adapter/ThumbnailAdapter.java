@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -36,7 +37,8 @@ public class ThumbnailAdapter extends RecyclerView.Adapter<ThumbnailAdapter.MyVi
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(context).inflate(R.layout.thumbnail_item, parent,false);
+//        Replaced context with "parent.getContext()"
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.thumbnail_item, parent,false);
         return new MyViewHolder(itemView);
     }
 
@@ -72,7 +74,6 @@ public class ThumbnailAdapter extends RecyclerView.Adapter<ThumbnailAdapter.MyVi
     public int getItemCount() {
         return thumbnailItems.size();
     }
-
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
             ImageView thumbnail;

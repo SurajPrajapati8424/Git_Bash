@@ -17,6 +17,7 @@ import com.dr.psycho.ryuk.Adapter.ThumbnailAdapter;
 import com.dr.psycho.ryuk.Interfaces.FilterListFragmentListener;
 import com.dr.psycho.ryuk.Utils.BitmapUtils;
 import com.dr.psycho.ryuk.Utils.SpacesItemDecoration;
+
 import com.zomato.photofilters.FilterPack;
 import com.zomato.photofilters.imageprocessors.Filter;
 import com.zomato.photofilters.utils.ThumbnailItem;
@@ -84,7 +85,7 @@ public class FilterListFragment extends Fragment implements FilterListFragmentLi
 //                Add normal bitmap first
                 ThumbnailItem thumbnailItem = new ThumbnailItem();
                 thumbnailItem.image = thumbImg;
-                thumbnailItem.filterName = "Normal";
+                thumbnailItem.filterName = getString(R.string.filter_normal);
                 ThumbnailsManager.addThumb(thumbnailItem);
 
                 List<Filter> filters = FilterPack.getFilterPack(getActivity());
