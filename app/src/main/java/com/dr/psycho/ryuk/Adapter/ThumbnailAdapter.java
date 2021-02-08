@@ -10,8 +10,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.dr.psycho.ryuk.FilterListFragment;
 import com.dr.psycho.ryuk.Interfaces.FilterListFragmentListener;
 import com.dr.psycho.ryuk.R;
 import com.zomato.photofilters.utils.ThumbnailItem;
@@ -25,6 +27,11 @@ public class ThumbnailAdapter extends RecyclerView.Adapter<ThumbnailAdapter.MyVi
     private Context context;
     private int selectIndex = 0;
 
+    public ThumbnailAdapter(List<ThumbnailItem> thumbnailItems, FilterListFragmentListener listener, Context context) {
+        this.thumbnailItems = thumbnailItems;
+        this.listener = listener;
+        this.context = context;
+    }
 
     @NonNull
     @Override

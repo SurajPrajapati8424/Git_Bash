@@ -18,6 +18,10 @@ public class EditImageFragment extends Fragment implements SeekBar.OnSeekBarChan
     private EditImageFragmentListener listener;
     SeekBar seekbar_brightness,seekbar_contrast,seekbar_saturation;
 
+    public void setListener(EditImageFragmentListener listener) {
+        this.listener = listener;
+    }
+
     public EditImageFragment(){
 
     }
