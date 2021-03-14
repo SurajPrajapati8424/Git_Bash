@@ -2,12 +2,19 @@ git status 	//to chechk whether it is git repo or not !
 
 git init	//To inintalize 
 
-git add --a or git add .		//--a for ALL  insert into staged area
-git restore --staged "file_name" 	//restore from Staged area.
 
-git commit -m  				 // -m for Massege. without m it opens EDITOR
+git add --a or git add .		//--a for ALL  insert into staged area
+git restore this.txt			//discard changes
+
+
+git commit -m  				 // -m for Massege. without m it opens 
+git commit -a -m "msg"		//Direct commit skipping staging.
+	eg., (if u create new file which is not staged /\ this cmnd will commit all staged at this point. it doesn't include new file wich is note staged ).
+
+
 git commit --amend 			 //edit previous commit.
 git restore --staged "file name " 	 //To Unstaged
+
 
 git checkout "File_name" 		 //restore all Data that is manupilated.
 git checkout -f  			 //to go back to the previous Commit
@@ -47,13 +54,12 @@ step 4: git commit -m .gitignore		 //ready for push.
    -> "/dynamic/"  to ignore 'dynamic' from present folder ONLY.
    -> eg., "/GIT/dynamic/dir/" To specific folder ;-)
 
-
-git dif 			//Compare `STAGING Area` with UPDATED! Working Area
+		(Before Staged Area)
+git dif 			//Compare `STAGING Area` with UPDATED! Working rea
 	
+		(After Staging)
 git diff --staged		//To Compare "last Commit"  to "Current stage".
 
-git commit -a -m "msg"		//Direct commit skipping staging.
-	eg., (if u create new file which is not staged /\ this cmnd will commit all staged at this point. it doesn't include new file wich is note staged ).
 
 git rm demos.docx			//remove file.
 
@@ -70,6 +76,12 @@ git remote -v			//to see fetch & push sites.
 
 git push -u origin master
 (It Deny to push in this repo.)
+======================	START CONNECTON  =================================
+$ git config --global user.name "Suraj"
+$ git config --global user.email "surajprajapati8286@gmail.com"
+git config user.name
+git config user.email
+
 
 //Create SSH Keys		key saved:= [ /c/Users/suraj/.ssh/id_rsa]
 ssh-keygen -t rsa -b 4096 -C "email"
@@ -82,8 +94,34 @@ eval $(ssh-agent -s)
 //saving generated ssh
 ssh-add ~/.ssh/id_rsa
 
+//start connection
+ssh -T git@github.com		//TYPE 'yes'	Welcome 'user.name'
 
 //retrieve ssh key
 tail ~/.ssh/id_rsa.pub
 	*copy all output paste in GitHub SSH Key & ADD SSH KEY TO ACC//
+=======================================================
+//TO custom create shortcut
+git config --global alias.st status   ~RUN only: ' git st '
 
+
+
+//show the present branches
+
+git branch
+
+//create new branch and switch to it 
+
+git checkout -b bugfix
+
+//switching to branches
+
+git checkout bugfix
+
+
+//push other branches to remote (eother than master branch)
+git push origin bugfix
+
+
+
+123456768789090
